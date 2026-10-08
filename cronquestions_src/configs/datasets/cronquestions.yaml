@@ -1,0 +1,19 @@
+dataset:
+  name: "CronQuestions"
+  kg_files:
+    train: "train"
+    valid: "valid"
+    test: "test"
+    full: "full.txt"
+  question_files:
+    train: "train.pickle"
+    valid: "valid.pickle"
+    test: "test.pickle"
+  entity_text_file: "wd_id2entity_text.txt"
+  relation_text_file: "wd_id2relation_text.txt"
+  delimiter: "\t"
+  encoding: "utf-8"
+  official_question_types:
+    simple: ["simple_entity", "simple_time"]
+    complex: ["first_last", "before_after", "time_join"]
+

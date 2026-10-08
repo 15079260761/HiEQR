@@ -1,0 +1,10 @@
+question_parser:
+  version: "2.2.0"
+  system: "question_parser/system.txt"
+  user: "question_parser/user.jinja2"
+  schema: "question_parser/output_schema.json"
+answer_explanation:
+  version: "1.0.0"
+  system: "answer_explanation/system.txt"
+  user: "answer_explanation/user.jinja2"
+  schema: "answer_explanation/output_schema.json"

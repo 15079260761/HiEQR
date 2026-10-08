@@ -1,0 +1,109 @@
+defaults:
+  - "../base.yaml"
+  - "../datasets/cronquestions.yaml"
+
+project:
+  name: "DECGC-CronQuestions"
+paths:
+  dataset_root: "${paths.data_root}/CronQuestions/wikidata_big"
+  kg_root: "${paths.dataset_root}/kg"
+  questions_root: "${paths.dataset_root}/questions"
+  source_root: "${project.root}/cronquestions_src"
+  prompts_root: "${paths.source_root}/prompts"
+  outputs_root: "${project.root}/cronquestions_outputs"
+  manifests_root: "${paths.outputs_root}/manifests"
+  cache_root: "${paths.outputs_root}/cache"
+  runs_root: "${paths.outputs_root}/runs"
+  predictions_root: "${paths.outputs_root}/predictions"
+  evidence_root: "${paths.outputs_root}/evidence"
+  demo_root: "${paths.outputs_root}/demo"
+  reports_root: "${paths.outputs_root}/reports"
+  logs_root: "${paths.outputs_root}/logs"
+
+llm:
+  # CronQuestions supplies benchmark-standard entity/time links. Relations,
+  # operators and directions are still inferred from question text.
+  enabled: false
+
+demo:
+  enabled: true
+  train_max_samples: 10000
+  valid_max_samples: 2000
+  evaluation_max_samples: 500
+  qualitative_examples: 20
+  sampling_seed: 42
+  stratified_sampling: true
+
+retrieval:
+  retrieve_top_k: 128
+  rerank_top_k: 48
+  beam_size: 24
+  max_paths_per_answer: 3
+  max_hops: 3
+retriever_data:
+  max_pairs_per_question: 8
+  max_neighbor_facts_scanned: 8192
+  progress_every: 250
+retriever_training:
+  enabled: true
+  epochs: 3
+  batch_size: 16
+  gradient_accumulation_steps: 2
+  learning_rate: 1.0e-5
+  max_length: 192
+  mixed_precision: "auto"
+  gradient_checkpointing: true
+  trainable: true
+  progress_every_batches: 100
+  validation_fraction: 0.05
+reranker_training:
+  enabled: true
+  epochs: 3
+  batch_size: 8
+  gradient_accumulation_steps: 4
+  learning_rate: 1.0e-5
+  max_length: 256
+  mixed_precision: "auto"
+  gradient_checkpointing: true
+  trainable: true
+  progress_every_batches: 100
+  validation_fraction: 0.05
+reasoner_training:
+  epochs: 8
+  batch_size: 4
+  max_prefixes_per_question: 6
+  validation_max_questions: 500
+  progress_every_batches: 250
+  gradient_accumulation_steps: 8
+  reasoner_learning_rate: 2.0e-4
+  retriever_learning_rate: 5.0e-6
+  reranker_learning_rate: 5.0e-6
+  early_stopping_patience: 3
+  mixed_precision: "auto"
+  gradient_checkpointing: true
+  resume: "auto"
+evaluation:
+  split: "test"
+  max_samples: 500
+  metrics: [hits1, hits10, mrr, candidate_answer_recall, positive_chain_coverage,
+    evidence_fact_validity, temporal_validity, answer_chain_consistency,
+    completed_chain_precision, fallback_rate]
+quality_gate:
+  blocking: false
+  parse_topic_entity_min: 1.0
+  # High-precision lexical relation hints cover about 78%; ambiguous cases
+  # deliberately abstain and are handled by dense retrieval.
+  parse_relation_min: 0.75
+  parse_temporal_operator_min: 0.99
+  retriever_question_coverage_min: 0.95
+  reasoner_positive_question_coverage_min: 0.95
+  hits1_min: 0.985
+  hits10_min: 0.985
+
+checkpoint:
+  save_every_steps: 500
+  keep_last: 1
+  keep_best: 1
+  keep_old_runs: 0
+  minimum_free_disk_gb: 10
+  cleanup_after_successful_save: true

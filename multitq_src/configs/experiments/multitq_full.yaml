@@ -1,0 +1,17 @@
+defaults:
+  - "multitq_demo.yaml"
+demo:
+  enabled: false
+  train_max_samples: null
+  valid_max_samples: null
+  evaluation_max_samples: null
+retriever_training:
+  epochs: 5
+reranker_training:
+  epochs: 5
+reasoner_training:
+  epochs: 15
+evaluation:
+  split: "test"
+  max_samples: null
+

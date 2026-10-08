@@ -1,0 +1,76 @@
+project:
+  name: "DECGC"
+  # Commands are launched from the repository root by the bundled scripts.
+  root: "."
+  seed: 42
+paths:
+  env_file: "${project.root}/.env"
+  data_root: "${project.root}/data"
+  dataset_root: "${paths.data_root}/MultiTQ"
+  kg_root: "${paths.dataset_root}/kg"
+  questions_root: "${paths.dataset_root}/questions"
+  source_root: "${project.root}/multitq_src"
+  prompts_root: "${paths.source_root}/prompts"
+  models_root: "${project.root}/models"
+  pretrained_retriever: "${paths.models_root}/bge-base-en-v1.5"
+  pretrained_reranker: "${paths.models_root}/bge-reranker-base"
+  outputs_root: "${project.root}/outputs"
+  manifests_root: "${paths.outputs_root}/manifests"
+  cache_root: "${paths.outputs_root}/cache"
+  runs_root: "${paths.outputs_root}/runs"
+  predictions_root: "${paths.outputs_root}/predictions"
+  evidence_root: "${paths.outputs_root}/evidence"
+  demo_root: "${paths.outputs_root}/demo"
+  reports_root: "${paths.outputs_root}/reports"
+  logs_root: "${paths.outputs_root}/logs"
+llm:
+  enabled: true
+  provider: "deepseek"
+  base_url: "https://api.deepseek.com"
+  model: "deepseek-v4-flash"
+  fallback_model: "deepseek-v4-pro"
+  api_key_env: "DEEPSEEK_API_KEY"
+  temperature: 0.0
+  max_tokens: 1200
+  thinking_enabled: false
+  max_retries: 4
+  circuit_breaker_failures: 3
+  timeout_seconds: 90
+  parse_confidence_threshold: 0.80
+  cache_enabled: true
+model:
+  hidden_size: 256
+  hop_embedding_size: 32
+  dropout: 0.15
+  stop_threshold: 0.65
+  prune_threshold: 0.10
+  trainable_last_n_layers: 4
+retriever_data:
+  # Bound weak supervision per question so high-degree KG entities cannot dominate
+  # preprocessing time or the retriever training distribution.
+  max_pairs_per_question: 4
+  max_neighbor_facts_scanned: 4096
+  progress_every: 250
+loss:
+  answer: 1.0
+  ranking: 1.0
+  retrieval: 0.2
+  rerank: 0.2
+  prefix: 0.5
+  stop: 0.3
+  counterfactual: 0.3
+  counterfactual_margin: 0.2
+evidence:
+  top_supporting_chains: 5
+  include_completed_only: true
+  require_fact_provenance: true
+  require_temporal_validation: true
+  require_chain_connectivity: true
+  export_human_readable_report: true
+checkpoint:
+  save_every_steps: 500
+  keep_last: 1
+  keep_best: 1
+  keep_old_runs: 0
+  minimum_free_disk_gb: 10
+  cleanup_after_successful_save: true

@@ -1,0 +1,2 @@
+{"type":"object","required":["topic_entities","target_entities","relation_hints","temporal_constraints","temporal_operator","answer_type","answer_role","ambiguities","confidence"],"properties":{"topic_entities":{"type":"array"},"target_entities":{"type":"array"},"relation_hints":{"type":"array"},"temporal_constraints":{"type":"array"},"temporal_operator":{"type":["string","null"]},"answer_type":{"type":["string","null"]},"answer_role":{"type":["string","null"]},"ambiguities":{"type":"array"},"confidence":{"type":"number","minimum":0,"maximum":1}}}
+

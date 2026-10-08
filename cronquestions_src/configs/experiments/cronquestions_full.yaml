@@ -1,0 +1,12 @@
+defaults:
+  - "cronquestions_demo.yaml"
+demo:
+  enabled: false
+  # Preserve the training-stage signature so full evaluation reuses exactly
+  # the three models selected from the 10k/2k train/validation samples.
+  train_max_samples: 10000
+  valid_max_samples: 2000
+  evaluation_max_samples: null
+evaluation:
+  split: "test"
+  max_samples: null

@@ -1,0 +1,14 @@
+
+# Local secrets and environments
+.env
+.env.*
+!.env.example
+.venv/
+
+# Generated files
+__pycache__/
+*.pyc
+.pytest_cache/
+.pytest_tmp*/
+outputs/
+cronquestions_outputs/

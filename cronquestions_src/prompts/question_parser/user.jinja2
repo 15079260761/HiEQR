@@ -1,0 +1,16 @@
+Question: {{ question }}
+Candidate entities: {{ candidate_entities | tojson }}
+Candidate relations: {{ candidate_relations | tojson }}
+Allowed temporal operators: {{ temporal_operators | tojson }}
+Return only one JSON object with exactly this shape:
+{
+  "topic_entities": [],
+  "target_entities": [],
+  "relation_hints": [],
+  "temporal_constraints": [],
+  "temporal_operator": null,
+  "answer_type": null,
+  "answer_role": null,
+  "ambiguities": [],
+  "confidence": 0.0
+}

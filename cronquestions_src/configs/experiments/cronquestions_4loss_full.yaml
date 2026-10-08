@@ -1,0 +1,15 @@
+defaults:
+  - "cronquestions_4loss_main.yaml"
+
+demo:
+  # Keep this true so the training-stage signature is identical to the 10k
+  # main config. Only evaluation_max_samples is lifted for the full test.
+  enabled: true
+  # Keep training-stage signatures identical to the 10k/2k experiment.
+  train_max_samples: 10000
+  valid_max_samples: 2000
+  evaluation_max_samples: null
+
+evaluation:
+  split: "test"
+  max_samples: null

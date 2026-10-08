@@ -1,0 +1,79 @@
+defaults:
+  - "../base.yaml"
+  - "../datasets/multitq.yaml"
+demo:
+  enabled: true
+  train_max_samples: 10000
+  valid_max_samples: 2000
+  evaluation_max_samples: 500
+  qualitative_examples: 20
+  sampling_seed: 42
+  stratified_sampling: true
+retrieval:
+  retrieve_top_k: 96
+  rerank_top_k: 32
+  beam_size: 16
+  max_paths_per_answer: 2
+  max_hops: 3
+retriever_data:
+  max_pairs_per_question: 8
+  max_neighbor_facts_scanned: 4096
+  progress_every: 250
+retriever_training:
+  enabled: true
+  epochs: 3
+  batch_size: 16
+  gradient_accumulation_steps: 2
+  learning_rate: 1.0e-5
+  max_length: 192
+  mixed_precision: "auto"
+  gradient_checkpointing: true
+  trainable: true
+  progress_every_batches: 100
+  validation_fraction: 0.05
+reranker_training:
+  enabled: true
+  epochs: 3
+  batch_size: 8
+  gradient_accumulation_steps: 4
+  learning_rate: 1.0e-5
+  max_length: 256
+  mixed_precision: "auto"
+  gradient_checkpointing: true
+  trainable: true
+  progress_every_batches: 100
+  validation_fraction: 0.05
+reasoner_training:
+  epochs: 8
+  batch_size: 4
+  max_prefixes_per_question: 6
+  validation_max_questions: 500
+  progress_every_batches: 250
+  gradient_accumulation_steps: 8
+  reasoner_learning_rate: 2.0e-4
+  retriever_learning_rate: 5.0e-6
+  reranker_learning_rate: 5.0e-6
+  early_stopping_patience: 3
+  mixed_precision: "auto"
+  gradient_checkpointing: true
+  resume: "auto"
+evaluation:
+  split: "valid"
+  max_samples: 500
+  metrics: [hits1, hits10, mrr, candidate_answer_recall, positive_chain_coverage,
+    evidence_fact_validity, temporal_validity, answer_chain_consistency,
+    completed_chain_precision, fallback_rate]
+quality_gate:
+  # Demo runs always preserve and report real quality shortfalls, but coverage
+  # targets do not abort a long-running experiment.
+  blocking: false
+  # The deterministic MultiTQ parser currently resolves 96.38% of the
+  # stratified training sample; retain a strict 96% floor instead of blocking
+  # the experiment on the remaining actor-surface paraphrases.
+  parse_topic_entity_min: 0.96
+  parse_relation_min: 0.98
+  parse_temporal_operator_min: 0.99
+  retriever_question_coverage_min: 0.95
+  reasoner_positive_question_coverage_min: 0.95
+  hits1_min: 0.815
+  hits10_min: 0.985

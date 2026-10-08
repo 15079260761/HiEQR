@@ -1,0 +1,22 @@
+dataset:
+  name: "MultiTQ"
+  kg_files:
+    train: "train.txt"
+    valid: "valid.txt"
+    test: "test.txt"
+    full: "full.txt"
+  question_files:
+    train: "train.json"
+    valid: "dev.json"
+    test: "test.json"
+  delimiter: "\t"
+  encoding: "utf-8"
+  canonical_fields:
+    qid: "quid"
+    question: "question"
+    answers: "answers"
+    answer_type: "answer_type"
+    question_type: "qlabel"
+    temporal_operator: "qtype"
+    time_granularity: "time_level"
+
