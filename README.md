@@ -39,5 +39,5 @@ The scripts automatically locate the repository root and support resuming. Multi
 artifacts are written to `outputs/`; CronQuestions artifacts are written to
 `cronquestions_outputs/`. Run the two experiments sequentially when using one GPU.
 
-For dataset-specific details, see `multitq_src/README.md` and
-`cronquestions_src/README_CRONQUESTIONS.md`.
+This root README is the repository's single reproduction guide; implementation
+details are kept alongside the executable code and configuration files.
