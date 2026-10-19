@@ -28,10 +28,10 @@ API_KEY=your_api_key
 Run the main experiments:
 
 ```bash
-# MultiTQ: train on 10k questions, then evaluate on the full test set
+# MultiTQ
 bash multitq_src/scripts/run_main_experiment.sh
 
-# CronQuestions: train on 10k questions, then evaluate on the full test set
+# CronQuestions
 bash cronquestions_src/scripts/run_main_experiment.sh
 ```
 
