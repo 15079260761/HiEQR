@@ -25,7 +25,7 @@ If online question parsing is needed, create `.env` in the repository root:
 API_KEY=your_api_key
 ```
 
-Run the paper-aligned three-loss main experiments from Equation 7:
+Run the main experiments:
 
 ```bash
 # MultiTQ: train on 10k questions, then evaluate on the full test set
