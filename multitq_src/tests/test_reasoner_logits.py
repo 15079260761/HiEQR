@@ -61,13 +61,11 @@ def test_reasoner_trainer_completes_an_epoch_with_logit_losses(config, tmp_path)
     )
 
     assert result["training_complete"]
-    assert set(result["active_losses"]) == {
-        "answer", "ranking", "prefix", "stop", "counterfactual"
-    }
+    assert result["active_losses"] == ["prefix", "stop", "counterfactual"]
     assert (tmp_path / "checkpoints/latest.json").exists()
 
 
-def test_three_loss_ablation_computes_only_answer_ranking_prefix(
+def test_loss_ablation_computes_only_prefix(
     config,
     tmp_path,
     monkeypatch,
@@ -112,7 +110,7 @@ def test_three_loss_ablation_computes_only_answer_ranking_prefix(
         checkpoint_config_hash="three-loss-test",
     )
 
-    assert result["active_losses"] == ["answer", "ranking", "prefix"]
+    assert result["active_losses"] == ["prefix"]
     # One BCE call is the prefix loss. A stop-loss BCE would make this two.
     assert len(calls) == 1
 

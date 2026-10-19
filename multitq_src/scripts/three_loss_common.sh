@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-set -Eeuo pipefail
+
+# Shared environment for the paper-aligned MultiTQ three-loss experiment.
+set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="${DECGC_PROJECT_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
@@ -9,12 +11,12 @@ export HF_HUB_OFFLINE=1
 export TRANSFORMERS_OFFLINE=1
 export TOKENIZERS_PARALLELISM=false
 export PYTHONUNBUFFERED=1
-export PYTHONPATH="$PROJECT_ROOT/cronquestions_src${PYTHONPATH:+:$PYTHONPATH}"
+export PYTHONPATH="$PROJECT_ROOT/multitq_src${PYTHONPATH:+:$PYTHONPATH}"
 
 DECGC=(python -B -m decgc.cli)
-CONFIG="cronquestions_src/configs/experiments/cronquestions_4loss_main.yaml"
-FULL_CONFIG="cronquestions_src/configs/experiments/cronquestions_4loss_full.yaml"
-LOG_DIR="cronquestions_outputs/logs/main-4loss-cronquestions-10k"
+
+CONFIG="multitq_src/configs/experiments/multitq_3loss_main.yaml"
+LOG_DIR="outputs/logs/main-3loss-multitq-10k"
 mkdir -p "$LOG_DIR"
 
 run_stage() {

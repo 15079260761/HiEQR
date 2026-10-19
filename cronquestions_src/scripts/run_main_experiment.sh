@@ -2,7 +2,7 @@
 set -Eeuo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-LOCK_FILE="${DECGC_GPU_LOCK:-/tmp/decgc-four-loss-main.lock}"
+LOCK_FILE="${DECGC_GPU_LOCK:-/tmp/hieqr-three-loss-main.lock}"
 exec 9>"$LOCK_FILE"
 echo "Waiting for the single-GPU experiment lock: $LOCK_FILE"
 flock 9

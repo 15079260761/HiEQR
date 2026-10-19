@@ -141,19 +141,18 @@ def multi_positive_candidate_loss(
     return torch.stack(losses).mean()
 
 
-def combined_loss(answer_logits, answer_labels, reliability_logits, prefix_labels,
-                  stop_logits, stop_labels, positive_scores, counterfactual_scores,
+def combined_loss(reliability_logits, prefix_labels, stop_logits, stop_labels,
+                  positive_scores, counterfactual_scores,
                   weights: dict) -> dict[str, torch.Tensor]:
+    """Compute the three-term reasoner objective from Equation 7."""
     components = {
-        "answer": functional.cross_entropy(answer_logits, answer_labels),
         "prefix": prefix_bce(reliability_logits, prefix_labels),
         "stop": functional.binary_cross_entropy_with_logits(stop_logits, stop_labels.float()),
         "counterfactual": counterfactual_margin(
             positive_scores, counterfactual_scores, float(weights.get("counterfactual_margin", 0.2))
         ),
     }
-    total = (weights.get("answer", 1.0) * components["answer"]
-             + weights.get("prefix", 0.5) * components["prefix"]
+    total = (weights.get("prefix", 0.5) * components["prefix"]
              + weights.get("stop", 0.3) * components["stop"]
              + weights.get("counterfactual", 0.3) * components["counterfactual"])
     return {"total": total, **components}

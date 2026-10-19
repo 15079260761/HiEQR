@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
-source "$(dirname "$0")/cronquestions_4loss_common.sh"
+source "$(dirname "$0")/cronquestions_3loss_common.sh"
 
 run_stage parse_full_test "${DECGC[@]}" parse-questions \
   --config "$FULL_CONFIG" --split test --no-online --resume auto
@@ -30,10 +30,10 @@ PY
 run_stage export_full_paper_metrics python -B \
   cronquestions_src/scripts/export_paper_metrics.py \
   --diagnostics "cronquestions_outputs/reports/$RUN_ID.diagnostics.json" \
-  --output-prefix "cronquestions_outputs/reports/$RUN_ID.four_loss.paper_metrics" \
-  --model "DECGC-4Loss" --decimals 1
+  --output-prefix "cronquestions_outputs/reports/$RUN_ID.three_loss.paper_metrics" \
+  --model "HiEQR" --decimals 1
 
-python -B cronquestions_src/scripts/verify_four_loss_full_result.py \
+python -B cronquestions_src/scripts/verify_three_loss_full_result.py \
   --run-id "$RUN_ID"
 run_stage export_result_manifest "${DECGC[@]}" export-results \
   --config "$FULL_CONFIG"
@@ -41,5 +41,5 @@ run_stage export_result_manifest "${DECGC[@]}" export-results \
 echo "Official full-test run: $RUN_ID"
 echo "Metrics: cronquestions_outputs/reports/$RUN_ID.json"
 echo "Diagnostics: cronquestions_outputs/reports/$RUN_ID.diagnostics.json"
-echo "Paper table: cronquestions_outputs/reports/$RUN_ID.four_loss.paper_metrics.csv"
+echo "Paper table: cronquestions_outputs/reports/$RUN_ID.three_loss.paper_metrics.csv"
 echo "Evidence: cronquestions_outputs/evidence/$RUN_ID/"

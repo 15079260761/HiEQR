@@ -1,4 +1,4 @@
-"""Audit the persisted 30k result and report the target without rewriting it."""
+"""Audit the persisted three-loss 30k result without rewriting it."""
 from __future__ import annotations
 import argparse
 import json

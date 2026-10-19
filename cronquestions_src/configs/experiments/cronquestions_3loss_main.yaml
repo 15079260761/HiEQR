@@ -1,0 +1,30 @@
+defaults:
+  - "cronquestions_demo.yaml"
+
+paths:
+  source_root: "${project.root}/cronquestions_src"
+  prompts_root: "${paths.source_root}/prompts"
+  # Retriever/reranker hashes and upstream cache manifests are loss-agnostic;
+  # the Equation 7 mapping creates its own reasoner stage hash.
+  outputs_root: "${project.root}/cronquestions_outputs"
+
+# Equation 7: L_reasoner = 0.5 L_prefix + 0.3 L_stop + 0.3 L_cf.
+loss:
+  prefix: 0.5
+  stop: 0.3
+  counterfactual: 0.3
+
+ablation:
+  name: "none-main-three-loss-cronquestions"
+  active_losses: ["prefix", "stop", "counterfactual"]
+  removed_losses: []
+  selection_source: "HiEQR Equation 7"
+  weight_normalization: false
+
+experiment:
+  name: "main-3loss-cronquestions-10k"
+  description: "Paper-aligned CronQuestions three-loss main experiment, 10k training questions"
+
+quality_gate:
+  hits1_min: 0.985
+  hits10_min: 0.985

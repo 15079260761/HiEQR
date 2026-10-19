@@ -8,10 +8,6 @@ import torch
 import torch.nn.functional as functional
 
 from ..evaluation.answer_normalizer import normalize_answer
-from ..models.losses import (
-    grouped_answer_ranking_loss,
-    grouped_candidate_answer_ranking_loss,
-)
 from ..utils.hashing import object_hash, state_dict_hash
 from ..utils.io import read_json, write_json
 from ..utils.device import grad_scaler
@@ -21,10 +17,6 @@ from .early_stopping import EarlyStopping
 
 
 _REASONER_LOSS_DEFAULTS = {
-    "answer": 1.0,
-    # ``ranking`` is retained only for backward-compatible ablations.  The
-    # paper-aligned main objective has exactly four active terms.
-    "ranking": 0.0,
     "prefix": 0.5,
     "stop": 0.3,
     "counterfactual": 0.3,
@@ -32,7 +24,7 @@ _REASONER_LOSS_DEFAULTS = {
 
 
 def reasoner_loss_weights(config) -> dict[str, float]:
-    """Resolve the four main losses plus the disabled legacy ranking term."""
+    """Resolve the three terms in Equation 7 of the HiEQR paper."""
     settings = config.model_extra["loss"]
     weights = {
         name: float(settings.get(name, default))
@@ -44,14 +36,7 @@ def reasoner_loss_weights(config) -> dict[str, float]:
 
 
 def loss_ablation_metadata(loss_weights: dict[str, float]) -> dict[str, object]:
-    """Describe direct-loss ablations without conflating them with model removal.
-
-    Answer, prefix, and stop logits remain available to the ranking score when
-    their own auxiliary objective is disabled.  This isolates the contribution
-    of each *loss term*, rather than changing the architecture at the same
-    time.  Counterfactual supervision is the exception: when disabled, its
-    extra counterfactual encoder forward pass is omitted completely.
-    """
+    """Record which of the three Equation 7 objectives are active."""
     active = [name for name, weight in loss_weights.items() if weight != 0.0]
     removed = [name for name, weight in loss_weights.items() if weight == 0.0]
     return {
@@ -388,64 +373,11 @@ def train_reasoner(
                         output["reliability_logits"], tensors["prefix_label"].float()
                     )
 
-                # The answer scorers are still required when L_ranking is
-                # active.  Disabling L_answer removes only its direct
-                # supervision, not these logits from the shared rank score.
-                need_answer_scores = (
-                    loss_weights["answer"] != 0.0
-                    or loss_weights["ranking"] != 0.0
-                )
-                if (
-                    need_answer_scores
-                    and model.retriever is not None
-                    and batch.get("answer_texts")
-                ):
-                    answer_logits = model.score_answers(
-                        output["chain"],
-                        batch["answer_texts"],
-                    )
-                    interaction_logits = model.score_interactions(
-                        output["chain"],
-                        batch["answer_texts"],
-                        batch.get("group_ids", batch["questions"]),
-                    )
-                    answer_loss = zero
-                    if loss_weights["answer"] != 0.0:
-                        answer_loss = grouped_candidate_answer_ranking_loss(
-                            answer_logits + interaction_logits,
-                            tensors["prefix_label"],
-                            batch.get("group_ids", batch["questions"]),
-                            batch["answer_texts"],
-                        )
-                else:
-                    answer_logits = output["reliability_logits"] * 0.0
-                    interaction_logits = answer_logits
-                    answer_loss = zero
-                ranking_logits = (
-                    output["reliability_logits"]
-                    + output["stop_logits"]
-                    + answer_logits
-                    + interaction_logits
-                )
-                ranking_loss = zero
-                if loss_weights["ranking"] != 0.0 and batch.get("answer_texts"):
-                    ranking_loss = grouped_candidate_answer_ranking_loss(
-                        ranking_logits,
-                        tensors["prefix_label"],
-                        batch.get("group_ids", batch["questions"]),
-                        batch["answer_texts"],
-                    )
-                elif loss_weights["ranking"] != 0.0:
-                    ranking_loss = grouped_answer_ranking_loss(
-                        ranking_logits,
-                        tensors["prefix_label"],
-                        batch.get("group_ids", batch["questions"]),
-                    )
-                loss = (
-                    loss_weights["answer"] * answer_loss
-                    + loss_weights["prefix"] * prefix_loss
-                    + loss_weights["ranking"] * ranking_loss
-                )
+                # Equation 7 contains exactly three direct objectives.  The
+                # answer-support and interaction heads remain part of the
+                # complete-chain inference score in Equation 10, but they do
+                # not introduce additional training losses here.
+                loss = loss_weights["prefix"] * prefix_loss
                 if loss_weights["stop"] != 0.0:
                     stop_loss = functional.binary_cross_entropy_with_logits(
                         output["stop_logits"], tensors["stop_label"].float()

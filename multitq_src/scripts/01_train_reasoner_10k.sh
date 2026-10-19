@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-source "$(dirname "$0")/four_loss_common.sh"
+source "$(dirname "$0")/three_loss_common.sh"
 
 run_stage environment_check "${DECGC[@]}" doctor --config "$CONFIG"
 
@@ -25,7 +25,7 @@ for stage in ("retriever", "reranker"):
     print(f"Reusing trained {stage}: {best}")
 
 reasoner = _run_dir(config, "reasoner")
-print("Four-loss reasoner run:", reasoner)
+print("Three-loss reasoner run:", reasoner)
 PY
 
 # Retriever/reranker hashes exclude the reasoner loss configuration. Their
@@ -50,14 +50,12 @@ config, _ = load_config(Path(sys.argv[1]))
 run = _run_dir(config, "reasoner")
 summary = json.loads((run / "training_summary.json").read_text(encoding="utf-8"))
 assert summary["training_complete"] is True
-assert summary["active_losses"] == ["answer", "prefix", "stop", "counterfactual"]
-assert summary["removed_losses"] == ["ranking"]
+assert summary["active_losses"] == ["prefix", "stop", "counterfactual"]
+assert summary["removed_losses"] == []
 assert summary["loss_weights"] == {
-    "answer": 1.0,
-    "ranking": 0.0,
     "prefix": 0.5,
     "stop": 0.3,
     "counterfactual": 0.3,
 }
-print("Four-loss reasoner verified:", run)
+print("Three-loss reasoner verified:", run)
 PY

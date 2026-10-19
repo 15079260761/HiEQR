@@ -1,0 +1,25 @@
+defaults:
+  - "multitq_demo.yaml"
+
+paths:
+  source_root: "${project.root}/multitq_src"
+  prompts_root: "${paths.source_root}/prompts"
+
+# Human-readable level before the immutable stage hash:
+# outputs/runs/<stage>/<experiment.name>/multitq-<hash>/
+experiment:
+  name: "main-3loss-multitq-10k"
+  description: "Paper-aligned MultiTQ three-loss main experiment, 10k training questions"
+
+# Equation 7: L_reasoner = 0.5 L_prefix + 0.3 L_stop + 0.3 L_cf.
+loss:
+  prefix: 0.5
+  stop: 0.3
+  counterfactual: 0.3
+
+ablation:
+  name: "none-main-three-loss-multitq"
+  active_losses: ["prefix", "stop", "counterfactual"]
+  removed_losses: []
+  selection_source: "HiEQR Equation 7"
+  weight_normalization: false

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
-source "$(dirname "$0")/cronquestions_4loss_common.sh"
+source "$(dirname "$0")/cronquestions_3loss_common.sh"
 
 run_stage environment_check "${DECGC[@]}" doctor --config "$CONFIG"
 
@@ -19,7 +19,7 @@ for stage in ("retriever", "reranker"):
     )
     weights = (best / "model.safetensors", best / "pytorch_model.bin")
     assert (best / "config.json").exists() and any(path.exists() for path in weights), (
-        f"Completed CronQuestions five-loss {stage} checkpoint is missing: {best}"
+        f"Completed CronQuestions {stage} checkpoint is missing: {best}"
     )
     print(f"Reusing completed CronQuestions {stage}: {best}")
 
@@ -29,7 +29,7 @@ for split in ("train", "valid"):
     print(f"Reusing {split} chain cache: {manifest}")
 
 reasoner = _run_dir(config, "reasoner")
-print("New four-loss reasoner run:", reasoner)
+print("New three-loss reasoner run:", reasoner)
 PY
 
 # No retriever/reranker preparation or standalone training occurs here. The
@@ -51,11 +51,10 @@ config, _ = load_config(Path(sys.argv[1]))
 run = _run_dir(config, "reasoner")
 summary = json.loads((run / "training_summary.json").read_text(encoding="utf-8"))
 assert summary["training_complete"] is True
-assert summary["active_losses"] == ["answer", "prefix", "stop", "counterfactual"]
-assert summary["removed_losses"] == ["ranking"]
+assert summary["active_losses"] == ["prefix", "stop", "counterfactual"]
+assert summary["removed_losses"] == []
 assert summary["loss_weights"] == {
-    "answer": 1.0, "ranking": 0.0, "prefix": 0.5,
-    "stop": 0.3, "counterfactual": 0.3,
+    "prefix": 0.5, "stop": 0.3, "counterfactual": 0.3,
 }
-print("Verified four-loss training summary:", run)
+print("Verified three-loss training summary:", run)
 PY

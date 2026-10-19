@@ -1,5 +1,5 @@
 defaults:
-  - "cronquestions_4loss_main.yaml"
+  - "cronquestions_3loss_main.yaml"
 
 demo:
   # Keep this true so the training-stage signature is identical to the 10k

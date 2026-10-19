@@ -52,8 +52,6 @@ retriever_data:
   max_neighbor_facts_scanned: 4096
   progress_every: 250
 loss:
-  answer: 1.0
-  ranking: 1.0
   retrieval: 0.2
   rerank: 0.2
   prefix: 0.5

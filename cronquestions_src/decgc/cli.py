@@ -1012,7 +1012,7 @@ def _chain_cache(config: Config, split: str, limit: int | None, reuse: bool = Tr
     retriever_path = _best_model(config, "retriever", config.paths.pretrained_retriever)
     reranker_path = _best_model(config, "reranker", config.paths.pretrained_reranker)
     # Derive the summary from the model path actually selected. This preserves
-    # candidate-cache validity when a named four-loss experiment reuses the
+    # candidate-cache validity when the named paper experiment reuses the
     # legacy standalone reranker checkpoint.
     reranker_summary = reranker_path.parent / "training_summary.json"
     reranker_hash = read_json(reranker_summary)["after_hash"] if reranker_summary.exists() else object_hash(str(reranker_path))

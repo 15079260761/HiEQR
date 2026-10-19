@@ -31,7 +31,7 @@ def test_cleanup_removes_only_obsolete_resume_artifacts(tmp_path):
     outputs = tmp_path / "outputs"
     counterfactuals = outputs / "cache/counterfactuals"
     retrieval = outputs / "cache/retrieval_pairs"
-    label = outputs / "runs/retriever/main-4loss-multitq-10k"
+    label = outputs / "runs/retriever/main-3loss-multitq-10k"
     current = label / "multitq-current"
     old_new = outputs / "runs/retriever/multitq-old-new"
     old_stale = outputs / "runs/retriever/older-experiment/multitq-old-stale"

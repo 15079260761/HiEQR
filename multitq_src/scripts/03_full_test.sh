@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-source "$(dirname "$0")/four_loss_common.sh"
+source "$(dirname "$0")/three_loss_common.sh"
 
 FULL_OVERRIDES=(
   --set demo.evaluation_max_samples=null
@@ -47,7 +47,7 @@ PY
 python -B multitq_src/scripts/export_paper_metrics.py \
   --diagnostics "outputs/reports/$RUN_ID.diagnostics.json" \
   --output-prefix "outputs/reports/$RUN_ID.paper_metrics" \
-  --model "DECGC-4Loss" --decimals 1
+  --model "HiEQR" --decimals 1
 
 python -B - "$RUN_ID" <<'PY'
 import json
